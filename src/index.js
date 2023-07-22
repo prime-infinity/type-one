@@ -1,3 +1,5 @@
+import * as d3 from "d3";
+
 // Sample data for the bar chart
 const data = [
   { label: "A", value: 10 },
@@ -15,6 +17,7 @@ const height = 400 - margin.top - margin.bottom;
 // Create the SVG container
 const svg = d3
   .select(".chart")
+  .append("svg")
   .attr("width", width + margin.left + margin.right)
   .attr("height", height + margin.top + margin.bottom)
   .append("g")
