@@ -10,18 +10,6 @@ async function getUser(user) {
   }
 }
 
-async function getTopRepositories() {
-  try {
-    const response = await axios.get(
-      "https://api.github.com/search/repositories?q=stars:>0&sort=stars&order=desc&per_page=10"
-    );
-    return response.data.items;
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    return null;
-  }
-}
-
 async function getAllFilesInDirectory(owner, repo, path) {
   try {
     // Fetch the repository tree recursively
@@ -39,6 +27,9 @@ async function getAllFilesInDirectory(owner, repo, path) {
       return item.type === "blob" && item.path.startsWith(path);
     });
 
+    // Sort the files by path in descending order (latest file first)
+    files.sort((a, b) => (a.path > b.path ? -1 : 1));
+
     return files;
   } catch (error) {
     console.error("Error fetching files:", error.message);
@@ -46,4 +37,4 @@ async function getAllFilesInDirectory(owner, repo, path) {
   }
 }
 
-export { getUser, getTopRepositories, getAllFilesInDirectory };
+export { getUser, getAllFilesInDirectory };
