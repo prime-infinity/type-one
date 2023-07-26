@@ -1,49 +1,60 @@
-import { getUser, getAllFilesInDirectory } from "./data";
-import axios from "axios";
+import * as d3 from "d3";
 
-// Function to decode Base64 content
-function decodeBase64(base64String) {
-  const decodedString = atob(base64String);
-  const uint8Array = new Uint8Array(decodedString.length);
-  for (let i = 0; i < decodedString.length; i++) {
-    uint8Array[i] = decodedString.charCodeAt(i);
-  }
-  return uint8Array;
-}
+// Sample data for the bar chart
+const data = [
+  { label: "A", value: 10 },
+  { label: "B", value: 20 },
+  { label: "C", value: 15 },
+  { label: "D", value: 25 },
+  { label: "E", value: 12 },
+];
 
-async function downloadFile(url) {
-  try {
-    const response = await axios.get(url);
+// Set the dimensions and margins for the chart
+const margin = { top: 30, right: 30, bottom: 70, left: 60 };
+const width = 600 - margin.left - margin.right;
+const height = 400 - margin.top - margin.bottom;
 
-    // Decode the Base64 content
-    const decodedContent = decodeBase64(response.data.content);
+// Create the SVG container
+const svg = d3
+  .select("#chart-container")
+  .append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-    // Create a Blob from the decoded content
-    const blob = new Blob([decodedContent], { type: "text/csv" });
+// Create the x and y scales
+const xScale = d3
+  .scaleBand()
+  .domain(data.map((d) => d.label))
+  .range([0, width])
+  .padding(0.1);
 
-    // Generate a temporary download link and click it to trigger the download
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "github-ranking.csv"; // Set the desired file name
-    link.click();
-  } catch (error) {
-    console.error("Error downloading file:", error.message);
-  }
-}
+const yScale = d3
+  .scaleLinear()
+  .domain([0, d3.max(data, (d) => d.value)])
+  .range([height, 0]);
 
-async function fetchData() {
-  const owner = "EvanLi";
-  const repo = "Github-Ranking";
-  const path = "Data";
+// Add the bars to the chart
+svg
+  .selectAll(".bar")
+  .data(data)
+  .enter()
+  .append("rect")
+  .attr("class", "bar")
+  .attr("x", (d) => xScale(d.label))
+  .attr("y", (d) => yScale(d.value))
+  .attr("width", xScale.bandwidth())
+  .attr("height", (d) => height - yScale(d.value));
 
-  const files = await getAllFilesInDirectory(owner, repo, path);
-  if (files.length > 0) {
-    // Get the last file's URL
-    const lastFileUrl = files[files.length - 1].url;
+// Add the x and y axis
+const xAxis = d3.axisBottom(xScale);
+const yAxis = d3.axisLeft(yScale);
 
-    // Download the last file
-    downloadFile(lastFileUrl);
-  }
-}
+svg
+  .append("g")
+  .attr("class", "x-axis")
+  .attr("transform", `translate(0, ${height})`)
+  .call(xAxis);
 
-fetchData();
+svg.append("g").attr("class", "y-axis").call(yAxis);
