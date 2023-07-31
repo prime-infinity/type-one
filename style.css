@@ -10,3 +10,18 @@ html, body {
     height: 100vh;
   }
   
+  /* CSS style for the tooltip */
+.tooltip {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 14px;
+  /*pointer-events: none;*/
+}
+
+circle {
+  position: relative;
+  z-index: 1;
+}
