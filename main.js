@@ -35,117 +35,98 @@ async function loadCSV() {
   }
 }
 
-// Function to create the bubble chart
 function createBubbleChart(data) {
-  // Set up the chart dimensions
+  // Specify the dimensions of the chart.
   const width = 800;
   const height = 500;
-  const margin = { top: 40, right: 40, bottom: 60, left: 60 };
-  const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom;
+  const margin = 1; // to avoid clipping the root circle stroke
 
-  // Create the SVG container
+  // Create a categorical color scale.
+  const color = d3
+    .scaleOrdinal()
+    .domain(["JavaScript", "TypeScript", "Go", "Python", "React"])
+    .range(["yellow", "darkblue", "lightblue", "purple", "blue"]);
+
+  // Create the pack layout.
+  const pack = d3
+    .pack()
+    .size([width - margin * 2, height - margin * 2])
+    .padding(3);
+
+  // Compute the hierarchy from the (flat) data; expose the values
+  // for each node; lastly apply the pack layout.
+  const root = pack(d3.hierarchy({ children: data }).sum((d) => d.stars));
+
+  // Create the SVG container.
   const svg = d3
-    .select("#chart-container")
-    .append("svg")
+    .create("svg")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    .attr("viewBox", [-margin, -margin, width, height])
+    .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;")
+    .attr("text-anchor", "middle");
 
-  svg
-    .on("mouseover", () => {
-      console.log("SVG mouseover");
-    })
-    .on("click", () => {
-      console.log("SVG click");
-    });
+  // Append the SVG to the chart container
+  const chartContainer = document.getElementById("chart-container");
+  chartContainer.appendChild(svg.node());
 
-  // Create the pack layout
-  const pack = d3.pack().size([innerWidth, innerHeight]).padding(5);
-
-  // Generate the hierarchy data for the pack layout
-  const root = d3.hierarchy({ children: data }).sum((d) => d.stars);
-
-  // Compute the pack layout
-  pack(root);
-
-  // Create the bubble elements
-  const bubbles = svg
-    .selectAll("circle")
+  // Place each (leaf) node according to the layout’s x and y values.
+  const node = svg
+    .append("g")
+    .selectAll()
     .data(root.leaves())
-    .enter()
+    .join("g")
+    .attr("transform", (d) => `translate(${d.x},${d.y})`);
+
+  // Add a title.
+  node
+    .append("title")
+    .text(
+      (d) =>
+        `${d.data.repo_name}\nStars: ${d.data.stars}\nForks: ${d.data.forks}\nLanguage: ${d.data.language}`
+    );
+
+  // Add a filled circle.
+  node
     .append("circle")
-    .attr("cx", (d) => d.x)
-    .attr("cy", (d) => d.y)
-    .attr("r", (d) => d.r)
-    .attr("fill", "red");
+    .attr("fill-opacity", 0.7)
+    .attr("fill", (d) => {
+      // Use custom colors based on languages, if available
+      return d.data.language ? color(d.data.language) : "white";
+    })
+    .attr("stroke", (d) => {
+      // Use thick black borders for nodes with no language
+      return d.data.language ? "none" : "black";
+    })
+    .attr("stroke-width", (d) => {
+      // Set stroke width for nodes with no language
+      return d.data.language ? 0 : 3;
+    })
+    .attr("r", (d) => d.r);
 
-  bubbles.on("mouseover", (event, d) => {
-    console.log(22);
-  });
-  bubbles.on("mouseout", handleMouseOut);
-  bubbles.on("click", (event, d) => {
-    console.log(222);
-  });
+  // Add a label.
+  const text = node.append("text").attr("clip-path", (d) => `circle(${d.r})`);
 
-  // Create the foreignObject elements inside the bubbles for labels
-  const labels = svg
-    .selectAll("foreignObject")
-    .data(root.leaves())
-    .enter()
-    .append("foreignObject")
-    .attr("x", (d) => d.x - d.r)
-    .attr("y", (d) => d.y - d.r)
-    .attr("width", (d) => 2 * d.r)
-    .attr("height", (d) => 2 * d.r)
-    .append("xhtml:div") // Use div as the embedded HTML element
-    .style("display", "flex")
-    .style("align-items", "center")
-    .style("justify-content", "center")
-    .style("width", (d) => 2 * d.r + "px")
-    .style("height", (d) => 2 * d.r + "px")
-    .style("font-size", "12px") // Set the font size for the labels
-    .text((d) => d.data.repo_name); // Display the full text
+  // Add a tspan for each CamelCase-separated word.
+  text
+    .selectAll()
+    .data((d) => d.data.repo_name.split(/(?=[A-Z][a-z])|\s+/g)) // Split repo_name for word wrapping
+    .join("tspan")
+    .attr("x", 0)
+    .attr("y", (d, i, nodes) => `${i - nodes.length / 2 + 0.35}em`)
+    .text((d) => d);
 
-  // Truncate the text if needed using CSS ellipsis
-  labels
-    .style("overflow", "hidden")
-    .style("text-overflow", "ellipsis")
-    .style("white-space", "nowrap");
-}
-
-// Function to handle mouseover event and show the tooltip
-function handleMouseOver(event, d) {
-  console.log(3);
-  const tooltip = d3.select(".tooltip");
-
-  // Calculate the tooltip position relative to the container
-  const tooltipX = event.pageX + 10;
-  const tooltipY = event.pageY + 10;
-
-  // Update the tooltip content
-  tooltip.html(
-    `
-    <strong>Repo Name:</strong> ${d.data.repo_name}<br>
-    <strong>Stars:</strong> ${d.data.stars}<br>
-    <strong>Forks:</strong> ${d.data.forks}<br>
-    <strong>Language:</strong> ${d.data.language}<br>
-    <strong>Issues:</strong> ${d.data.issues}<br>
-    <strong>Last Commit:</strong> ${d.data.last_commit}<br>
-    <strong>Description:</strong> ${d.data.description}
-    `
-  );
-
-  // Show the tooltip
-  tooltip
-    .style("left", `${tooltipX}px`)
-    .style("top", `${tooltipY}px`)
-    .style("opacity", 0.9);
-}
-
-// Function to handle mouseout event and hide the tooltip
-function handleMouseOut() {
-  // Hide the tooltip
-  d3.select(".tooltip").style("opacity", 0);
+  // Add a tspan for the node’s stars.
+  text
+    .append("tspan")
+    .attr("x", 0)
+    .attr(
+      "y",
+      (d) =>
+        `${d.data.repo_name.split(/(?=[A-Z][a-z])|\s+/g).length / 2 + 0.35}em`
+    )
+    .attr("fill-opacity", 0.7)
+    .text((d) => `Stars: ${d.data.stars}`);
 }
 
 // Call the function to load and display the CSV data
