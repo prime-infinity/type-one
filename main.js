@@ -6,27 +6,22 @@ async function loadCSV() {
     // Load the CSV file using D3.js
     const csvData = await d3.csv("/Data/github-ranking.csv");
 
-    // Create a Set to keep track of repository names
-    const repositorySet = new Set();
+    // Store the data in a variable accessible by other functions
+    window.csvData = csvData;
 
-    // Filter the data to include only unique repositories and sort by stars in descending order
-    const uniqueSortedData = csvData
-      .filter((d) => {
-        if (!repositorySet.has(d.repo_name)) {
-          repositorySet.add(d.repo_name);
-          return true;
-        }
-        return false;
-      })
-      .sort((a, b) => b.stars - a.stars);
+    // Default filter option (stars)
+    const defaultFilter = "stars";
 
-    // Get the top 10 items
-    const top10Data = uniqueSortedData.slice(0, 10);
+    // Create the initial bubble chart with the default filter
+    updateChart(defaultFilter);
 
-    // Create the bar chart
-    //createBarChart(top10Data);
-    createBubbleChart(top10Data);
-    console.log(top10Data);
+    // Listen for changes in the filter selection
+    const filterSelect = document.getElementById("filter-select");
+    filterSelect.addEventListener("change", (event) => {
+      console.log("changed", event.target.value);
+      const selectedFilter = event.target.value;
+      updateChart(selectedFilter);
+    });
 
     // Display the data in the console
     //console.log(csvData);
@@ -35,7 +30,36 @@ async function loadCSV() {
   }
 }
 
-function createBubbleChart(data) {
+// Function to update the bubble chart based on the selected filter
+function updateChart(filter) {
+  // Get the CSV data from the stored variable
+  const csvData = window.csvData;
+
+  // Create a Set to keep track of repository names
+  const repositorySet = new Set();
+
+  // Filter the data to include only unique repositories and sort by the selected filter in descending order
+  const uniqueSortedData = csvData
+    .filter((d) => {
+      if (!repositorySet.has(d.repo_name)) {
+        repositorySet.add(d.repo_name);
+        return true;
+      }
+      return false;
+    })
+    .sort((a, b) => b[filter] - a[filter]);
+
+  // Get the top 10 items
+  const top10Data = uniqueSortedData.slice(0, 10);
+  console.log(top10Data);
+  // Remove the previous chart SVG element
+  d3.select("svg").remove();
+
+  // Create the updated bubble chart with the selected filter
+  createBubbleChart(top10Data, filter);
+}
+
+function createBubbleChart(data, filter) {
   // Specify the dimensions of the chart.
   const width = 800;
   const height = 500;
@@ -55,7 +79,12 @@ function createBubbleChart(data) {
 
   // Compute the hierarchy from the (flat) data; expose the values
   // for each node; lastly apply the pack layout.
-  const root = pack(d3.hierarchy({ children: data }).sum((d) => d.stars));
+  const root = pack(
+    d3
+      .hierarchy({ children: data })
+      .sum((d) => d[filter]) // Use the selected filter here
+      .sort((a, b) => b[filter] - a[filter]) // Sort by the selected filter in descending order
+  );
 
   // Create the SVG container.
   const svg = d3
