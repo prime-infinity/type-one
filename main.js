@@ -11,16 +11,28 @@ async function loadCSV() {
 
     // Default filter option (stars)
     const defaultFilter = "stars";
+    // Default count option (10)
+    const defaultCount = "10";
 
-    // Create the initial bubble chart with the default filter
-    updateChart(defaultFilter);
+    // Create the initial bubble chart with the default filter and count
+    updateChart(defaultFilter, defaultCount);
 
     // Listen for changes in the filter selection
     const filterSelect = document.getElementById("filter-select");
     filterSelect.addEventListener("change", (event) => {
       console.log("changed", event.target.value);
       const selectedFilter = event.target.value;
-      updateChart(selectedFilter);
+      const countSelect = document.getElementById("count-select");
+      countSelect.value = "10"; // Set the default count to 10 whenever the filter is changed
+      updateChart(selectedFilter, 10);
+    });
+
+    // Listen for changes in the count selection
+    const countSelect = document.getElementById("count-select");
+    countSelect.addEventListener("change", (event) => {
+      const selectedFilter = document.getElementById("filter-select").value;
+      const selectedCount = event.target.value;
+      updateChart(selectedFilter, selectedCount);
     });
 
     // Display the data in the console
@@ -31,9 +43,13 @@ async function loadCSV() {
 }
 
 // Function to update the bubble chart based on the selected filter
-function updateChart(filter) {
+function updateChart(filter, count) {
   // Get the CSV data from the stored variable
   const csvData = window.csvData;
+
+  // Convert count to a number
+  const countNum = +count;
+  console.log(countNum);
 
   // Create a Set to keep track of repository names
   const repositorySet = new Set();
@@ -50,7 +66,7 @@ function updateChart(filter) {
     .sort((a, b) => b[filter] - a[filter]);
 
   // Get the top 10 items
-  const top10Data = uniqueSortedData.slice(0, 10);
+  const top10Data = uniqueSortedData.slice(0, countNum);
   console.log(top10Data);
   // Remove the previous chart SVG element
   d3.select("svg").remove();
