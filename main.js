@@ -35,6 +35,16 @@ async function loadCSV() {
       updateChart(selectedFilter, selectedCount);
     });
 
+    // Listen for changes in the language selection
+    const languageSelect = document.getElementById("language-select");
+    languageSelect.addEventListener("change", (event) => {
+      console.log("changed", event.target.value);
+      const selectedFilter = document.getElementById("filter-select").value;
+      const selectedCount = document.getElementById("count-select").value;
+      const selectedLanguage = event.target.value;
+      updateChart(selectedFilter, selectedCount, selectedLanguage);
+    });
+
     // Display the data in the console
     //console.log(csvData);
   } catch (error) {
@@ -43,19 +53,26 @@ async function loadCSV() {
 }
 
 // Function to update the bubble chart based on the selected filter
-function updateChart(filter, count) {
+function updateChart(filter, count, language) {
   // Get the CSV data from the stored variable
   const csvData = window.csvData;
 
   // Convert count to a number
   const countNum = +count;
-  console.log(countNum);
+  //console.log(countNum);
 
   // Create a Set to keep track of repository names
   const repositorySet = new Set();
 
+  // Filter the data based on the language (if selected)
+  const filteredData = language
+    ? csvData.filter((d) => d.language === language)
+    : csvData;
+
+  console.log(filteredData);
+
   // Filter the data to include only unique repositories and sort by the selected filter in descending order
-  const uniqueSortedData = csvData
+  const uniqueSortedData = filteredData
     .filter((d) => {
       if (!repositorySet.has(d.repo_name)) {
         repositorySet.add(d.repo_name);
