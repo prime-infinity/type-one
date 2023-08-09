@@ -24,6 +24,8 @@ async function loadCSV() {
       const selectedFilter = event.target.value;
       const countSelect = document.getElementById("count-select");
       countSelect.value = "10"; // Set the default count to 10 whenever the filter is changed
+      const langSelect = document.getElementById("language-select");
+      langSelect.value = "";
       updateChart(selectedFilter, 10);
     });
 
@@ -32,6 +34,8 @@ async function loadCSV() {
     countSelect.addEventListener("change", (event) => {
       const selectedFilter = document.getElementById("filter-select").value;
       const selectedCount = event.target.value;
+      const langSelect = document.getElementById("language-select");
+      langSelect.value = "";
       updateChart(selectedFilter, selectedCount);
     });
 
