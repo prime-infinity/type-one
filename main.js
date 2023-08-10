@@ -14,6 +14,9 @@ async function loadCSV() {
     // Default count option (10)
     const defaultCount = "10";
 
+    // Define selectedFilter here
+    //let selectedFilter = defaultFilter;
+
     // Create the initial bubble chart with the default filter and count
     updateChart(defaultFilter, defaultCount);
 
@@ -49,6 +52,28 @@ async function loadCSV() {
       updateChart(selectedFilter, selectedCount, selectedLanguage);
     });
 
+    const bubbleButton = document.getElementById("bubble-button");
+    const barButton = document.getElementById("bar-button");
+
+    // Add event listeners for chart type buttons
+    bubbleButton.addEventListener("click", () => {
+      bubbleButton.classList.add("active");
+      barButton.classList.remove("active");
+      const selectedFilter = document.getElementById("filter-select").value;
+      const selectedCount = document.getElementById("count-select").value;
+      const selectedLanguage = document.getElementById("language-select").value;
+      updateChart(selectedFilter, selectedCount, selectedLanguage, "bubble");
+    });
+
+    barButton.addEventListener("click", () => {
+      barButton.classList.add("active");
+      bubbleButton.classList.remove("active");
+      const selectedFilter = document.getElementById("filter-select").value;
+      const selectedCount = document.getElementById("count-select").value;
+      const selectedLanguage = document.getElementById("language-select").value;
+      updateChart(selectedFilter, selectedCount, selectedLanguage, "bar");
+    });
+
     // Display the data in the console
     //console.log(csvData);
   } catch (error) {
@@ -57,7 +82,7 @@ async function loadCSV() {
 }
 
 // Function to update the bubble chart based on the selected filter
-function updateChart(filter, count, language) {
+function updateChart(filter, count, language, chartType) {
   // Get the CSV data from the stored variable
   const csvData = window.csvData;
 
@@ -93,7 +118,14 @@ function updateChart(filter, count, language) {
   d3.select("svg").remove();
 
   // Create the updated bubble chart with the selected filter
-  createBubbleChart(top10Data, filter);
+  //createBubbleChart(top10Data, filter);
+  if (chartType === "bubble") {
+    createBubbleChart(top10Data, filter);
+  } else if (chartType === "bar") {
+    createBarChart(top10Data, filter);
+  } else {
+    createBubbleChart(top10Data, filter);
+  }
 }
 
 function createBubbleChart(data, filter) {
@@ -193,6 +225,80 @@ function createBubbleChart(data, filter) {
     )
     .attr("fill-opacity", 0.7)
     .text((d) => `Stars: ${d.data.stars}`);
+}
+
+// Function to create a bar chart
+function createBarChart(data, filter) {
+  console.log("creating bar chart", data, filter);
+  // Specify chart dimensions
+  const width = 800;
+  const height = 500;
+  const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+
+  // Create SVG container
+  const svg = d3
+    .create("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("style", "max-width: 100%; height: auto;")
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  // Create x and y scales
+  const x = d3
+    .scaleBand()
+    .domain(data.map((d) => d.repo_name))
+    .range([0, innerWidth])
+    .padding(0.1);
+
+  const y = d3
+    .scaleLinear()
+    .domain([0, d3.max(data, (d) => d[filter])])
+    .nice()
+    .range([innerHeight, 0]);
+
+  // Create x and y axes
+  const xAxis = d3.axisBottom(x);
+  const yAxis = d3.axisLeft(y);
+
+  // Add x and y axes to SVG
+  svg
+    .append("g")
+    .attr("class", "x-axis")
+    .attr("transform", `translate(0,${innerHeight})`)
+    .call(xAxis);
+  svg.append("g").attr("class", "y-axis").call(yAxis);
+
+  // Create bars
+  svg
+    .selectAll(".bar")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("class", "bar")
+    .attr("x", (d) => x(d.repo_name))
+    .attr("y", (d) => y(d[filter]))
+    .attr("width", x.bandwidth())
+    .attr("height", (d) => innerHeight - y(d[filter]));
+
+  // Add tooltips
+  svg
+    .selectAll(".bar")
+    .append("title")
+    .text(
+      (d) => `${d.repo_name}\n${capitalizeFirstLetter(filter)}: ${d[filter]}`
+    );
+
+  // Append the SVG to the chart container
+  const chartContainer = document.getElementById("chart-container");
+  chartContainer.appendChild(svg.node());
+}
+
+// Function to capitalize first letter of a string
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 // Call the function to load and display the CSV data

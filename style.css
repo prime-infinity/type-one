@@ -9,4 +9,22 @@ html, body {
     width: 100%;
     height: 100vh;
   }
-  
+  .chart-button {
+  margin-left: 10px;
+  background-color: #ccc;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.chart-button.active {
+  background-color: #4caf50;
+  color: white;
+}
+.bar {
+  fill: steelblue; /* Bar color */
+}
+
+.bar:hover {
+  fill: orange; /* Bar color on hover */
+}
