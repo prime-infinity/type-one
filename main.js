@@ -29,6 +29,8 @@ async function loadCSV() {
       countSelect.value = "10"; // Set the default count to 10 whenever the filter is changed
       const langSelect = document.getElementById("language-select");
       langSelect.value = "";
+      bubbleButton.classList.add("active");
+      barButton.classList.remove("active");
       updateChart(selectedFilter, 10);
     });
 
@@ -39,6 +41,8 @@ async function loadCSV() {
       const selectedCount = event.target.value;
       const langSelect = document.getElementById("language-select");
       langSelect.value = "";
+      bubbleButton.classList.add("active");
+      barButton.classList.remove("active");
       updateChart(selectedFilter, selectedCount);
     });
 
@@ -49,6 +53,8 @@ async function loadCSV() {
       const selectedFilter = document.getElementById("filter-select").value;
       const selectedCount = document.getElementById("count-select").value;
       const selectedLanguage = event.target.value;
+      bubbleButton.classList.add("active");
+      barButton.classList.remove("active");
       updateChart(selectedFilter, selectedCount, selectedLanguage);
     });
 
@@ -63,6 +69,7 @@ async function loadCSV() {
       const selectedCount = document.getElementById("count-select").value;
       const selectedLanguage = document.getElementById("language-select").value;
       updateChart(selectedFilter, selectedCount, selectedLanguage, "bubble");
+      disableToggleButton(bubbleButton);
     });
 
     barButton.addEventListener("click", () => {
@@ -72,7 +79,17 @@ async function loadCSV() {
       const selectedCount = document.getElementById("count-select").value;
       const selectedLanguage = document.getElementById("language-select").value;
       updateChart(selectedFilter, selectedCount, selectedLanguage, "bar");
+      disableToggleButton(bubbleButton);
     });
+
+    function disableToggleButton(button) {
+      // Disable the button
+      button.disabled = true;
+
+      // Enable the other button
+      const otherButton = button === bubbleButton ? barButton : bubbleButton;
+      otherButton.disabled = false;
+    }
 
     // Display the data in the console
     //console.log(csvData);
