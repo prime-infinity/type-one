@@ -229,7 +229,7 @@ function createBubbleChart(data, filter) {
 
 // Function to create a bar chart
 function createBarChart(data, filter) {
-  console.log("creating bar chart", data, filter);
+  //console.log("creating bar chart", data, filter);
   // Specify chart dimensions
   const width = 800;
   const height = 500;
@@ -237,19 +237,10 @@ function createBarChart(data, filter) {
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
-  // Create SVG container
-  const svg = d3
-    .create("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("style", "max-width: 100%; height: auto;")
-    .append("g")
-    .attr("transform", `translate(${margin.left},${margin.top})`);
-
   // Create x and y scales
   const x = d3
     .scaleBand()
-    .domain(data.map((d) => d.repo_name))
+    .domain(data.map((d) => truncateText(d.repo_name, 12))) // Truncate repository names
     .range([0, innerWidth])
     .padding(0.1);
 
@@ -258,6 +249,14 @@ function createBarChart(data, filter) {
     .domain([0, d3.max(data, (d) => d[filter])])
     .nice()
     .range([innerHeight, 0]);
+
+  // Create SVG container
+  const svg = d3
+    .create("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("style", "max-width: 100%; height: auto;")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
 
   // Create x and y axes
   const xAxis = d3.axisBottom(x);
@@ -278,7 +277,7 @@ function createBarChart(data, filter) {
     .enter()
     .append("rect")
     .attr("class", "bar")
-    .attr("x", (d) => x(d.repo_name))
+    .attr("x", (d) => x(truncateText(d.repo_name, 12)))
     .attr("y", (d) => y(d[filter]))
     .attr("width", x.bandwidth())
     .attr("height", (d) => innerHeight - y(d[filter]));
@@ -300,6 +299,12 @@ function createBarChart(data, filter) {
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
-
+// Function to truncate text
+function truncateText(text, maxLength) {
+  if (text.length > maxLength) {
+    return text.substring(0, maxLength) + "...";
+  }
+  return text;
+}
 // Call the function to load and display the CSV data
 loadCSV();
