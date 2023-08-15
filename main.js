@@ -83,12 +83,14 @@ async function loadCSV() {
     });
 
     function disableToggleButton(button) {
-      // Disable the button
-      button.disabled = true;
-
-      // Enable the other button
-      const otherButton = button === bubbleButton ? barButton : bubbleButton;
-      otherButton.disabled = false;
+      //check if bubble button has active class
+      if (button.classList.contains("active")) {
+        button.disabled = true;
+        barButton.disabled = false;
+      } else {
+        barButton.disabled = true;
+        button.disabled = false;
+      }
     }
 
     // Display the data in the console
@@ -115,7 +117,7 @@ function updateChart(filter, count, language, chartType) {
     ? csvData.filter((d) => d.language === language)
     : csvData;
 
-  console.log(filteredData);
+  //console.log(filteredData);
 
   // Filter the data to include only unique repositories and sort by the selected filter in descending order
   const uniqueSortedData = filteredData
@@ -130,7 +132,7 @@ function updateChart(filter, count, language, chartType) {
 
   // Get the top 10 items
   const top10Data = uniqueSortedData.slice(0, countNum);
-  console.log(top10Data);
+  //console.log(top10Data);
   // Remove the previous chart SVG element
   d3.select("svg").remove();
 
