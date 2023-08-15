@@ -65,31 +65,31 @@ async function loadCSV() {
     bubbleButton.addEventListener("click", () => {
       bubbleButton.classList.add("active");
       barButton.classList.remove("active");
+      disableToggleButton(bubbleButton);
       const selectedFilter = document.getElementById("filter-select").value;
       const selectedCount = document.getElementById("count-select").value;
       const selectedLanguage = document.getElementById("language-select").value;
       updateChart(selectedFilter, selectedCount, selectedLanguage, "bubble");
-      disableToggleButton(bubbleButton);
     });
 
     barButton.addEventListener("click", () => {
       barButton.classList.add("active");
       bubbleButton.classList.remove("active");
+      disableToggleButton(bubbleButton);
       const selectedFilter = document.getElementById("filter-select").value;
       const selectedCount = document.getElementById("count-select").value;
       const selectedLanguage = document.getElementById("language-select").value;
       updateChart(selectedFilter, selectedCount, selectedLanguage, "bar");
-      disableToggleButton(bubbleButton);
     });
 
     function disableToggleButton(button) {
       //check if bubble button has active class
       if (button.classList.contains("active")) {
         button.disabled = true;
-        barButton.disabled = false;
+        barButton.removeAttribute("disabled");
       } else {
         barButton.disabled = true;
-        button.disabled = false;
+        button.removeAttribute("disabled");
       }
     }
 
@@ -132,7 +132,7 @@ function updateChart(filter, count, language, chartType) {
 
   // Get the top 10 items
   const top10Data = uniqueSortedData.slice(0, countNum);
-  //console.log(top10Data);
+  console.log(top10Data);
   // Remove the previous chart SVG element
   d3.select("svg").remove();
 
@@ -219,7 +219,15 @@ function createBubbleChart(data, filter) {
       // Set stroke width for nodes with no language
       return d.data.language ? 0 : 3;
     })
-    .attr("r", (d) => d.r);
+    .attr("r", (d) => d.r)
+    .style("cursor", "pointer") // Set cursor style to pointer
+
+    // Add click event listener to open repo URL when clicked
+    .on("click", (event, d) => {
+      if (d.data.repo_url) {
+        window.open(d.data.repo_url, "_blank");
+      }
+    });
 
   // Add a label.
   const text = node.append("text").attr("clip-path", (d) => `circle(${d.r})`);
@@ -299,7 +307,15 @@ function createBarChart(data, filter) {
     .attr("x", (d) => x(truncateText(d.repo_name, 12)))
     .attr("y", (d) => y(d[filter]))
     .attr("width", x.bandwidth())
-    .attr("height", (d) => innerHeight - y(d[filter]));
+    .attr("height", (d) => innerHeight - y(d[filter]))
+    .style("cursor", "pointer") // Set cursor style to pointer
+
+    // Add click event listener to open repo URL when clicked
+    .on("click", (event, d) => {
+      if (d.repo_url) {
+        window.open(d.repo_url, "_blank");
+      }
+    });
 
   // Add tooltips
   svg
