@@ -17,6 +17,8 @@ Type One is a web application that visualizes GitHub repository statistics using
 - HTML, CSS, and JavaScript for the frontend.
 - Node.js and D3-fetch for data loading and manipulation.
 
+## See Type One in Action
+Visit the [Type One Website](https://type-one.netlify.app/) to explore the GitHub repository statistics visualization in practice.
 
 ## Contributing
 
