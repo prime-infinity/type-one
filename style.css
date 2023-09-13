@@ -1,13 +1,13 @@
 html, body {
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    /*overflow: hidden;*/
   }
   
-  #chart-container {
+  #chart-one-container {
     position: relative;
     width: 100%;
-    height: 100vh;
+    height: 100%;
   }
   .chart-button {
   margin-left: 10px;

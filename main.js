@@ -1,4 +1,219 @@
+import axios from "axios";
 import * as d3 from "d3";
+
+const scrappingData = [
+  {
+    name: "pengzhile /      cocopilot",
+    description: "你可以把它称为：联合副驾驶。",
+    programmingLanguage: "Shell",
+    stars: "3,332",
+    forks: "502",
+    starsToday: "929",
+  },
+  {
+    name: "KillianLucas /      open-interpreter",
+    description: "OpenAI's Code Interpreter in your terminal, running locally",
+    programmingLanguage: "Python",
+    stars: "11,884",
+    forks: "839",
+    starsToday: "511",
+  },
+  {
+    name: "baichuan-inc /      Baichuan2",
+    description:
+      "A series of large language models developed by Baichuan Intelligent Technology",
+    programmingLanguage: "Python",
+    stars: "769",
+    forks: "30",
+    starsToday: "151",
+  },
+  {
+    name: "tjy-gitnub /      win12",
+    description: "Windows 12 网页版，在线体验 点击下面的链接在线体验",
+    programmingLanguage: "HTML",
+    stars: "2,926",
+    forks: "321",
+    starsToday: "549",
+  },
+  {
+    name: "modularml /      mojo",
+    description: "The Mojo Programming Language",
+    programmingLanguage: "",
+    stars: "10,046",
+    forks: "628",
+    starsToday: "350",
+  },
+  {
+    name: "Pythagora-io /      gpt-pilot",
+    description:
+      "Dev tool that writes scalable apps from scratch while the developer oversees the implementation",
+    programmingLanguage: "Python",
+    stars: "2,922",
+    forks: "229",
+    starsToday: "359",
+  },
+  {
+    name: "XPixelGroup /      DiffBIR",
+    description: "",
+    programmingLanguage: "Python",
+    stars: "645",
+    forks: "26",
+    starsToday: "327",
+  },
+  {
+    name: "run-llama /      sec-insights",
+    description: "A real world full-stack application using LlamaIndex",
+    programmingLanguage: "TypeScript",
+    stars: "783",
+    forks: "104",
+    starsToday: "189",
+  },
+  {
+    name: "omerbt /      TokenFlow",
+    description:
+      'Official Pytorch Implementation for "TokenFlow: Consistent Diffusion Features for Consistent Video Editing" presenting "TokenFlow"',
+    programmingLanguage: "Python",
+    stars: "904",
+    forks: "51",
+    starsToday: "73",
+  },
+  {
+    name: "aripiprazole /      rinha-de-compiler",
+    description: "🥖 | Rinha de compiladores (ou interpretadores kkkk",
+    programmingLanguage: "Rust",
+    stars: "356",
+    forks: "53",
+    starsToday: "120",
+  },
+  {
+    name: "aigc-apps /      sd-webui-EasyPhoto",
+    description: "📷 EasyPhoto | Your Smart AI Photo Generator.",
+    programmingLanguage: "Python",
+    stars: "821",
+    forks: "57",
+    starsToday: "243",
+  },
+  {
+    name: "labuladong /      fucking-algorithm",
+    description:
+      "刷算法全靠套路，认准 labuladong 就够了！English version supported! Crack LeetCode, not only how, but also why.",
+    programmingLanguage: "Markdown",
+    stars: "118,424",
+    forks: "22,664",
+    starsToday: "186",
+  },
+  {
+    name: "leandromoreira /      linux-network-performance-parameters",
+    description:
+      "Learn where some of the network sysctl variables fit into the Linux/Kernel network flow. Translations: 🇷🇺",
+    programmingLanguage: "",
+    stars: "4,643",
+    forks: "445",
+    starsToday: "164",
+  },
+  {
+    name: "ptahdao /      lmr-partners",
+    description: "",
+    programmingLanguage: "Solidity",
+    stars: "363",
+    forks: "99",
+    starsToday: "86",
+  },
+  {
+    name: "oven-sh /      bun",
+    description:
+      "Incredibly fast JavaScript runtime, bundler, test runner, and package manager – all in one",
+    programmingLanguage: "Zig",
+    stars: "44,010",
+    forks: "1,245",
+    starsToday: "52",
+  },
+  {
+    name: "SimplifyJobs /      New-Grad-Positions",
+    description:
+      "A collection of New Grad full time roles in SWE, Quant, and PM.",
+    programmingLanguage: "",
+    stars: "7,320",
+    forks: "892",
+    starsToday: "94",
+  },
+  {
+    name: "jzhang38 /      TinyLlama",
+    description:
+      "The TinyLlama project is an open endeavor to pretrain a 1.1B Llama model on 3 trillion tokens.",
+    programmingLanguage: "Python",
+    stars: "1,896",
+    forks: "76",
+    starsToday: "372",
+  },
+  {
+    name: "jqlang /      jq",
+    description: "Command-line JSON processor",
+    programmingLanguage: "C",
+    stars: "26,189",
+    forks: "1,478",
+    starsToday: "133",
+  },
+  {
+    name: "opentffoundation /      opentf",
+    description:
+      "OpenTF lets you declaratively manage your cloud infrastructure.",
+    programmingLanguage: "Go",
+    stars: "4,851",
+    forks: "116",
+    starsToday: "836",
+  },
+  {
+    name: "jpmorganchase /      python-training",
+    description: "Python training for business analysts and traders",
+    programmingLanguage: "Jupyter Notebook",
+    stars: "3,180",
+    forks: "769",
+    starsToday: "24",
+  },
+  {
+    name: "microsoft /      promptflow",
+    description:
+      "Build high-quality LLM apps - from prototyping, testing to production deployment and monitoring.",
+    programmingLanguage: "Python",
+    stars: "427",
+    forks: "44",
+    starsToday: "39",
+  },
+  {
+    name: "grpc /      grpc-go",
+    description: "The Go language implementation of gRPC. HTTP/2 based RPC",
+    programmingLanguage: "Go",
+    stars: "18,711",
+    forks: "4,109",
+    starsToday: "8",
+  },
+  {
+    name: "cloudcommunity /      Free-Certifications",
+    description: "A curated list of free courses & certifications.",
+    programmingLanguage: "",
+    stars: "4,911",
+    forks: "594",
+    starsToday: "312",
+  },
+  {
+    name: "mui /      material-ui",
+    description:
+      "MUI Core: Ready-to-use foundational React components, free forever. It includes Material UI, which implements Google's Material Design.",
+    programmingLanguage: "TypeScript",
+    stars: "88,529",
+    forks: "30,156",
+    starsToday: "25",
+  },
+  {
+    name: "mshumer /      gpt-author",
+    description: "",
+    programmingLanguage: "Jupyter Notebook",
+    stars: "1,276",
+    forks: "168",
+    starsToday: "113",
+  },
+];
 
 // Function to load and display the CSV data
 async function loadCSV() {
@@ -132,7 +347,7 @@ function updateChart(filter, count, language, chartType) {
 
   // Get the top 10 items
   const top10Data = uniqueSortedData.slice(0, countNum);
-  console.log(top10Data);
+  //console.log(top10Data);
   // Remove the previous chart SVG element
   d3.select("svg").remove();
 
@@ -184,7 +399,7 @@ function createBubbleChart(data, filter) {
     .attr("text-anchor", "middle");
 
   // Append the SVG to the chart container
-  const chartContainer = document.getElementById("chart-container");
+  const chartContainer = document.getElementById("chart-one-container");
   chartContainer.appendChild(svg.node());
 
   // Place each (leaf) node according to the layout’s x and y values.
@@ -326,7 +541,7 @@ function createBarChart(data, filter) {
     );
 
   // Append the SVG to the chart container
-  const chartContainer = document.getElementById("chart-container");
+  const chartContainer = document.getElementById("chart-one-container");
   chartContainer.appendChild(svg.node());
 }
 
@@ -343,3 +558,90 @@ function truncateText(text, maxLength) {
 }
 // Call the function to load and display the CSV data
 loadCSV();
+
+/**
+ *
+ * type-two
+ * visualising github trending
+ */
+
+// Function to filter data based on language and range
+async function fetchDataTwo(language, range) {
+  console.log(`fetching ${language} and ${range}`);
+  let url = `http://localhost:3000/api/get/trending?since=${range}&lang=${language}`;
+
+  try {
+    const response = await axios.get(url); // Await the Axios request
+    if (response.status === 200) {
+      return response.data; // Return the data
+    }
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+  return null; // Return null in case of an error
+}
+function filterData(data, language, range) {
+  // Implement your data filtering logic here
+  // For now, return the data as-is
+  return data;
+}
+
+async function loadData() {
+  const language = 0; // Default language
+  const range = "daily"; // Default range
+  let apiData;
+  try {
+    apiData = await fetchDataTwo(language, range);
+    console.log(apiData);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+
+  const langSelectTwo = document.getElementById("lang-select-two");
+  langSelectTwo.addEventListener("change", (event) => {
+    const selectedLanguage = event.target.value;
+    const selectedRange = document.getElementById("range-select-two").value;
+    console.log(selectedLanguage, selectedRange);
+  });
+
+  const rangeSelectTwo = document.getElementById("range-select-two");
+  rangeSelectTwo.addEventListener("change", (event) => {
+    const selectedRange = event.target.value;
+    const selectedLanguage = document.getElementById("lang-select-two").value;
+    console.log(selectedLanguage, selectedRange);
+  });
+
+  //const chartType = "bubble"; // Default chart type (bubble)
+
+  // Filter the data based on the provided language and range
+  //const filteredData = filterData(apiData, language, range);
+  //console.log(filteredData);
+  // Update the chart based on the chart type
+  //updateChartTwo(filteredData, chartType);
+}
+// Call the loadData function to load and display the data
+loadData();
+
+/*function updateChartTwo(data, chartType) {
+  if (chartType === "bubble") {
+    createBubbleChartTwo(data);
+  } else if (chartType === "bar") {
+    createBarChartTwo(data);
+  } else {
+    createBubbleChartTwo(data);
+  }
+}
+
+function createBarChartTwo(data) {
+  // Create a bar chart using the provided data
+  // Implement your bar chart creation logic here
+  console.log("Creating a bar chart with the following data:");
+  console.log(data);
+}
+
+function createBubbleChartTwo(data) {
+  // Create a bubble chart using the provided data
+  // Implement your bubble chart creation logic here
+  console.log("Creating a bubble chart with the following data:");
+  console.log(data);
+}*/
