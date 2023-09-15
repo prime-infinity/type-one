@@ -566,6 +566,13 @@ loadCSV();
  */
 
 // Function to filter data based on language and range
+
+function filterData(data, language, range) {
+  // Implement your data filtering logic here
+  // For now, return the data as-is
+  return data;
+}
+
 async function fetchDataTwo(language, range) {
   console.log(`fetching ${language} and ${range}`);
   let url = `http://localhost:3000/api/get/trending?since=${range}&lang=${language}`;
@@ -580,35 +587,55 @@ async function fetchDataTwo(language, range) {
   }
   return null; // Return null in case of an error
 }
-function filterData(data, language, range) {
-  // Implement your data filtering logic here
-  // For now, return the data as-is
-  return data;
-}
 
 async function loadData() {
-  const language = 0; // Default language
-  const range = "daily"; // Default range
   let apiData;
-  try {
-    apiData = await fetchDataTwo(language, range);
-    console.log(apiData);
-  } catch (error) {
-    console.error("Error fetching data:", error);
+  let isLoading = false;
+
+  // Function to fetch data
+  async function fetchDataAndUpdate(language, range) {
+    isLoading = true;
+    try {
+      apiData = await fetchDataTwo(language, range);
+      console.log(apiData);
+      // Update chart or perform other operations with apiData here
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      isLoading = false; // Set loading to false when data is received or in case of an error
+      updateUI();
+    }
   }
 
+  // Initial load with default values
+  fetchDataAndUpdate(0, "daily");
+
   const langSelectTwo = document.getElementById("lang-select-two");
+  const rangeSelectTwo = document.getElementById("range-select-two");
+  const loadingIndicator = document.getElementById("loading-indicator"); // Assuming you have a loading indicator element
+
+  function updateUI() {
+    console.log("called fucnction", isLoading);
+    isLoading
+      ? (loadingIndicator.style.display = "block")
+      : (loadingIndicator.style.display = "none");
+  }
+
+  // Initial UI update
+  updateUI();
+
   langSelectTwo.addEventListener("change", (event) => {
     const selectedLanguage = event.target.value;
     const selectedRange = document.getElementById("range-select-two").value;
-    console.log(selectedLanguage, selectedRange);
+    fetchDataAndUpdate(selectedLanguage, selectedRange);
+    updateUI();
   });
 
-  const rangeSelectTwo = document.getElementById("range-select-two");
   rangeSelectTwo.addEventListener("change", (event) => {
     const selectedRange = event.target.value;
     const selectedLanguage = document.getElementById("lang-select-two").value;
-    console.log(selectedLanguage, selectedRange);
+    fetchDataAndUpdate(selectedLanguage, selectedRange);
+    updateUI();
   });
 
   //const chartType = "bubble"; // Default chart type (bubble)
