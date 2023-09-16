@@ -567,6 +567,7 @@ loadCSV();
 
 // Function to filter data based on language and range
 
+/*
 function filterData(data, language, range) {
   // Implement your data filtering logic here
   // For now, return the data as-is
@@ -648,7 +649,7 @@ async function loadData() {
 }
 // Call the loadData function to load and display the data
 loadData();
-
+*/
 /*function updateChartTwo(data, chartType) {
   if (chartType === "bubble") {
     createBubbleChartTwo(data);
