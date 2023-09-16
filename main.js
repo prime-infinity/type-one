@@ -224,29 +224,28 @@ async function loadCSV() {
     // Store the data in a variable accessible by other functions
     window.csvData = csvData;
 
-    // Default filter option (stars)
-    const defaultFilter = "stars";
-    // Default count option (10)
-    const defaultCount = "10";
-
     // Define selectedFilter here
     //let selectedFilter = defaultFilter;
 
     // Create the initial bubble chart with the default filter and count
-    updateChart(defaultFilter, defaultCount);
-
+    updateChart("stars", "10");
+    const bubbleButton = document.getElementById("bubble-button");
+    bubbleButton.disabled = true;
+    const barButton = document.getElementById("bar-button");
+    let chartType = 0;
     // Listen for changes in the filter selection
     const filterSelect = document.getElementById("filter-select");
     filterSelect.addEventListener("change", (event) => {
       console.log("changed", event.target.value);
       const selectedFilter = event.target.value;
       const countSelect = document.getElementById("count-select");
-      countSelect.value = "10"; // Set the default count to 10 whenever the filter is changed
       const langSelect = document.getElementById("language-select");
-      langSelect.value = "";
-      bubbleButton.classList.add("active");
-      barButton.classList.remove("active");
-      updateChart(selectedFilter, 10);
+      updateChart(
+        selectedFilter,
+        countSelect.value,
+        langSelect.value,
+        chartType
+      );
     });
 
     // Listen for changes in the count selection
@@ -255,10 +254,7 @@ async function loadCSV() {
       const selectedFilter = document.getElementById("filter-select").value;
       const selectedCount = event.target.value;
       const langSelect = document.getElementById("language-select");
-      langSelect.value = "";
-      bubbleButton.classList.add("active");
-      barButton.classList.remove("active");
-      updateChart(selectedFilter, selectedCount);
+      updateChart(selectedFilter, selectedCount, langSelect.value, chartType);
     });
 
     // Listen for changes in the language selection
@@ -268,43 +264,45 @@ async function loadCSV() {
       const selectedFilter = document.getElementById("filter-select").value;
       const selectedCount = document.getElementById("count-select").value;
       const selectedLanguage = event.target.value;
-      bubbleButton.classList.add("active");
-      barButton.classList.remove("active");
-      updateChart(selectedFilter, selectedCount, selectedLanguage);
+      updateChart(selectedFilter, selectedCount, selectedLanguage, chartType);
     });
-
-    const bubbleButton = document.getElementById("bubble-button");
-    const barButton = document.getElementById("bar-button");
 
     // Add event listeners for chart type buttons
     bubbleButton.addEventListener("click", () => {
-      bubbleButton.classList.add("active");
-      barButton.classList.remove("active");
-      disableToggleButton(bubbleButton);
+      updateToggleButton();
       const selectedFilter = document.getElementById("filter-select").value;
       const selectedCount = document.getElementById("count-select").value;
       const selectedLanguage = document.getElementById("language-select").value;
-      updateChart(selectedFilter, selectedCount, selectedLanguage, "bubble");
+      updateChart(selectedFilter, selectedCount, selectedLanguage, 0);
     });
 
     barButton.addEventListener("click", () => {
-      barButton.classList.add("active");
-      bubbleButton.classList.remove("active");
-      disableToggleButton(bubbleButton);
+      updateToggleButton();
       const selectedFilter = document.getElementById("filter-select").value;
       const selectedCount = document.getElementById("count-select").value;
       const selectedLanguage = document.getElementById("language-select").value;
-      updateChart(selectedFilter, selectedCount, selectedLanguage, "bar");
+      updateChart(selectedFilter, selectedCount, selectedLanguage, 1);
     });
 
-    function disableToggleButton(button) {
+    function updateToggleButton() {
       //check if bubble button has active class
-      if (button.classList.contains("active")) {
-        button.disabled = true;
-        barButton.removeAttribute("disabled");
-      } else {
+
+      if (chartType === 0) {
+        chartType = 1;
+        console.log("chart is changed to bar");
+        bubbleButton.classList.remove("active");
+        barButton.classList.add("active");
+
+        bubbleButton.disabled = false;
         barButton.disabled = true;
-        button.removeAttribute("disabled");
+      } else if (chartType === 1) {
+        chartType = 0;
+        console.log("chart is changed to bubble");
+        barButton.classList.remove("active");
+        bubbleButton.classList.add("active");
+
+        bubbleButton.disabled = true;
+        barButton.disabled = false;
       }
     }
 
@@ -353,9 +351,9 @@ function updateChart(filter, count, language, chartType) {
 
   // Create the updated bubble chart with the selected filter
   //createBubbleChart(top10Data, filter);
-  if (chartType === "bubble") {
+  if (chartType === 0) {
     createBubbleChart(top10Data, filter);
-  } else if (chartType === "bar") {
+  } else if (chartType === 1) {
     createBarChart(top10Data, filter);
   } else {
     createBubbleChart(top10Data, filter);
