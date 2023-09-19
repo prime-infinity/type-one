@@ -20,6 +20,20 @@ Type One is a web application that visualizes GitHub repository statistics using
 ## See Type One in Action
 Visit the [Type One Website](https://type-one.netlify.app/) to explore the GitHub repository statistics visualization in practice.
 
+
+## Run locally
+- Clone the project and run `npm install` to add packages.
+
+```js
+git clone https://github.com/prime-infinity/type-one.git
+
+cd type-one.git
+
+//Start development server
+npm run dev
+
+```
+
 ## Contributing
 
 Contributions are welcome! If you find a bug or have an enhancement idea, please open an issue or submit a pull request. Make sure to follow the [Contributing Guidelines](CONTRIBUTING.md) before making a contribution.
