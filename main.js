@@ -612,24 +612,28 @@ async function loadData() {
   const langSelectTwo = document.getElementById("lang-select-two");
   const rangeSelectTwo = document.getElementById("range-select-two");
   const loadingIndicator = document.getElementById("loading-indicator"); // Assuming you have a loading indicator element
+  const successMessage = document.getElementById("success-message");
+  const errorMessage = document.getElementById("error-message");
 
   function dataFetchSuccess() {
     // Data fetched successfully
-    document.getElementById("success-message").classList.remove("hidden");
-    document.getElementById("error-message").classList.add("hidden");
+    successMessage.classList.remove("hidden");
+    errorMessage.classList.add("hidden");
     // Update chart or perform other operations with apiData here
   }
 
   function dataFetchFail() {
     // Data fetch failed
-    document.getElementById("error-message").classList.remove("hidden");
-    document.getElementById("success-message").classList.add("hidden");
+    errorMessage.classList.remove("hidden");
+    successMessage.classList.add("hidden");
   }
 
   function updateUI() {
     console.log("called fucnction", isLoading);
     isLoading
-      ? (loadingIndicator.style.display = "block")
+      ? ((loadingIndicator.style.display = "block"),
+        successMessage.classList.add("hidden"),
+        errorMessage.classList.add("hidden"))
       : (loadingIndicator.style.display = "none");
   }
 
