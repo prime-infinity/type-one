@@ -563,15 +563,7 @@ loadCSV();
  * visualising github trending
  */
 
-// Function to filter data based on language and range
-
-/*
-function filterData(data, language, range) {
-  // Implement your data filtering logic here
-  // For now, return the data as-is
-  return data;
-}
-
+//function to get data from endpoint
 async function fetchDataTwo(language, range) {
   console.log(`fetching ${language} and ${range}`);
   let url = `http://localhost:3000/api/get/trending?since=${range}&lang=${language}`;
@@ -587,19 +579,27 @@ async function fetchDataTwo(language, range) {
   return null; // Return null in case of an error
 }
 
+//actually load data into app
 async function loadData() {
   let apiData;
   let isLoading = false;
 
-  // Function to fetch data
+  // Function to fetch data using other function to fetch data, LOL
   async function fetchDataAndUpdate(language, range) {
     isLoading = true;
     try {
       apiData = await fetchDataTwo(language, range);
       console.log(apiData);
       // Update chart or perform other operations with apiData here
+
+      if (apiData !== null) {
+        dataFetchSuccess();
+      } else {
+        dataFetchFail();
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
+      dataFetchFail();
     } finally {
       isLoading = false; // Set loading to false when data is received or in case of an error
       updateUI();
@@ -613,6 +613,19 @@ async function loadData() {
   const rangeSelectTwo = document.getElementById("range-select-two");
   const loadingIndicator = document.getElementById("loading-indicator"); // Assuming you have a loading indicator element
 
+  function dataFetchSuccess() {
+    // Data fetched successfully
+    document.getElementById("success-message").classList.remove("hidden");
+    document.getElementById("error-message").classList.add("hidden");
+    // Update chart or perform other operations with apiData here
+  }
+
+  function dataFetchFail() {
+    // Data fetch failed
+    document.getElementById("error-message").classList.remove("hidden");
+    document.getElementById("success-message").classList.add("hidden");
+  }
+
   function updateUI() {
     console.log("called fucnction", isLoading);
     isLoading
@@ -623,6 +636,7 @@ async function loadData() {
   // Initial UI update
   updateUI();
 
+  //get data from api when changes to filter are made
   langSelectTwo.addEventListener("change", (event) => {
     const selectedLanguage = event.target.value;
     const selectedRange = document.getElementById("range-select-two").value;
@@ -647,7 +661,7 @@ async function loadData() {
 }
 // Call the loadData function to load and display the data
 loadData();
-*/
+
 /*function updateChartTwo(data, chartType) {
   if (chartType === "bubble") {
     createBubbleChartTwo(data);
@@ -656,6 +670,12 @@ loadData();
   } else {
     createBubbleChartTwo(data);
   }
+}
+// Function to filter data based on language and range
+function filterData(data, language, range) {
+  // Implement your data filtering logic here
+  // For now, return the data as-is
+  return data;
 }
 
 function createBarChartTwo(data) {

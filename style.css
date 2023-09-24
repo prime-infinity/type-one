@@ -28,3 +28,16 @@ html, body {
 .bar:hover {
   fill: orange; /* Bar color on hover */
 }
+.loading-error {
+  color: red;
+  font-weight: bold;
+}
+
+.loading-success {
+  color: green;
+  font-weight: bold;
+}
+
+.hidden {
+  display: none;
+}
