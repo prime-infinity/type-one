@@ -590,9 +590,8 @@ async function loadData() {
     try {
       apiData = await fetchDataTwo(language, range);
       console.log(apiData);
-      // Update chart or perform other operations with apiData here
-
       if (apiData !== null) {
+        //Update chart or perform other operations with apiData here
         dataFetchSuccess();
       } else {
         dataFetchFail();
@@ -619,7 +618,8 @@ async function loadData() {
     // Data fetched successfully
     successMessage.classList.remove("hidden");
     errorMessage.classList.add("hidden");
-    // Update chart or perform other operations with apiData here
+    // Call the function to create the bar chart
+    createBarChartTwo(apiData);
   }
 
   function dataFetchFail() {
@@ -654,44 +654,76 @@ async function loadData() {
     fetchDataAndUpdate(selectedLanguage, selectedRange);
     updateUI();
   });
-
-  //const chartType = "bubble"; // Default chart type (bubble)
-
-  // Filter the data based on the provided language and range
-  //const filteredData = filterData(apiData, language, range);
-  //console.log(filteredData);
-  // Update the chart based on the chart type
-  //updateChartTwo(filteredData, chartType);
 }
 // Call the loadData function to load and display the data
 loadData();
-
-/*function updateChartTwo(data, chartType) {
-  if (chartType === "bubble") {
-    createBubbleChartTwo(data);
-  } else if (chartType === "bar") {
-    createBarChartTwo(data);
-  } else {
-    createBubbleChartTwo(data);
-  }
-}
-// Function to filter data based on language and range
-function filterData(data, language, range) {
-  // Implement your data filtering logic here
-  // For now, return the data as-is
-  return data;
-}
-
 function createBarChartTwo(data) {
-  // Create a bar chart using the provided data
-  // Implement your bar chart creation logic here
-  console.log("Creating a bar chart with the following data:");
-  console.log(data);
-}
+  // Specify chart dimensions
+  const width = 800;
+  const height = 500;
+  const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
 
-function createBubbleChartTwo(data) {
-  // Create a bubble chart using the provided data
-  // Implement your bubble chart creation logic here
-  console.log("Creating a bubble chart with the following data:");
-  console.log(data);
-}*/
+  // Create x and y scales
+  const x = d3
+    .scaleBand()
+    .domain(data.map((d) => truncateText(d.name, 12))) // Truncate repository names
+    .range([0, innerWidth])
+    .padding(0.1);
+
+  const y = d3
+    .scaleLinear()
+    .domain([0, d3.max(data, (d) => parseInt(d.stars.replace(",", "")))])
+    .nice()
+    .range([innerHeight, 0]);
+
+  // Create SVG container
+  const svg = d3
+    .create("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("style", "max-width: 100%; height: auto;")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  // Create x and y axes
+  const xAxis = d3.axisBottom(x);
+  const yAxis = d3.axisLeft(y);
+
+  // Add x and y axes to SVG
+  svg
+    .append("g")
+    .attr("class", "x-axis")
+    .attr("transform", `translate(0,${innerHeight})`)
+    .call(xAxis);
+
+  svg.append("g").attr("class", "y-axis").call(yAxis);
+
+  // Create bars
+  svg
+    .selectAll(".bar")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("class", "bar")
+    .attr("x", (d) => x(truncateText(d.name, 12)))
+    .attr("y", (d) => y(parseInt(d.stars.replace(",", ""))))
+    .attr("width", x.bandwidth())
+    .attr("height", (d) => innerHeight - y(parseInt(d.stars.replace(",", ""))))
+    .style("cursor", "pointer")
+    .on("click", (event, d) => {
+      if (d.link) {
+        window.open(d.link, "_blank");
+      }
+    });
+
+  // Add tooltips
+  svg
+    .selectAll(".bar")
+    .append("title")
+    .text((d) => `${d.name}\n${capitalizeFirstLetter("stars")}: ${d.stars}`);
+
+  // Append the SVG to the chart container
+  const chartContainer = document.getElementById("chart-two-container");
+  chartContainer.appendChild(svg.node());
+}
