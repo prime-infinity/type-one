@@ -1,22 +1,41 @@
+/** main.js */
 import * as d3 from "d3";
+
+// Function to show/hide loading state
+function setLoadingState(isLoading) {
+  const loadingState = document.querySelector(".loading-state");
+  const chartContainer = document.getElementById("chart-one-container");
+
+  if (isLoading) {
+    if (loadingState) {
+      loadingState.style.display = "flex";
+    }
+  } else {
+    if (loadingState) {
+      loadingState.style.display = "none";
+    }
+  }
+}
 
 // Function to load and display the CSV data
 async function loadCSV() {
   try {
+    setLoadingState(true);
+
     // Load the CSV file using D3.js
     const csvData = await d3.csv("/Data/github-ranking.csv");
 
     // Store the data in a variable accessible by other functions
     window.csvData = csvData;
 
-    // Define selectedFilter here
-    //let selectedFilter = defaultFilter;
-
     // Create the initial bubble chart with the default filter and count
     updateChart("stars", "10");
     const bubbleButton = document.getElementById("bubble-button");
     bubbleButton.disabled = true;
     let chartType = 0;
+
+    setLoadingState(false);
+
     // Listen for changes in the filter selection
     const filterSelect = document.getElementById("filter-select");
     filterSelect.addEventListener("change", (event) => {
@@ -55,6 +74,16 @@ async function loadCSV() {
     //console.log(csvData);
   } catch (error) {
     console.error("Error loading CSV:", error.message);
+    setLoadingState(false);
+
+    // Show error message
+    const chartContainer = document.getElementById("chart-one-container");
+    chartContainer.innerHTML = `
+      <div class="loading-state">
+        <div class="loading-error">Failed to load data</div>
+        <p>Please check if the CSV file is available and try again.</p>
+      </div>
+    `;
   }
 }
 
@@ -88,20 +117,30 @@ function updateChart(filter, count, language, chartType) {
     })
     .sort((a, b) => b[filter] - a[filter]);
 
-  // Get the top 10 items
-  const top10Data = uniqueSortedData.slice(0, countNum);
-  //console.log(top10Data);
-  // Remove the previous chart SVG element
-  d3.select("svg").remove();
+  // Get the top items
+  const topData = uniqueSortedData.slice(0, countNum);
+  //console.log(topData);
+
+  // Remove the previous chart SVG element with smooth transition
+  const existingSvg = d3.select("#chart-one-container svg");
+  if (!existingSvg.empty()) {
+    existingSvg.transition().duration(300).style("opacity", 0).remove();
+  }
 
   // Create the updated bubble chart with the selected filter
-  //createBubbleChart(top10Data, filter);
   if (chartType === 0) {
-    createBubbleChart(top10Data, filter);
+    // Add a slight delay to ensure smooth transition
+    setTimeout(() => {
+      createBubbleChart(topData, filter);
+    }, 300);
   } else if (chartType === 1) {
-    createBarChart(top10Data, filter);
+    setTimeout(() => {
+      createBarChart(topData, filter);
+    }, 300);
   } else {
-    createBubbleChart(top10Data, filter);
+    setTimeout(() => {
+      createBubbleChart(topData, filter);
+    }, 300);
   }
 }
 
@@ -114,8 +153,38 @@ function createBubbleChart(data, filter) {
   // Create a categorical color scale.
   const color = d3
     .scaleOrdinal()
-    .domain(["JavaScript", "TypeScript", "Go", "Python", "React"])
-    .range(["yellow", "darkblue", "lightblue", "purple", "blue"]);
+    .domain([
+      "JavaScript",
+      "TypeScript",
+      "Go",
+      "Python",
+      "React",
+      "Java",
+      "C++",
+      "C#",
+      "PHP",
+      "Ruby",
+      "Swift",
+      "Kotlin",
+      "Rust",
+      "Dart",
+    ])
+    .range([
+      "#f59e0b", // JavaScript - amber
+      "#3b82f6", // TypeScript - blue
+      "#06b6d4", // Go - cyan
+      "#10b981", // Python - green
+      "#8b5cf6", // React - purple
+      "#ef4444", // Java - red
+      "#6366f1", // C++ - indigo
+      "#d946ef", // C# - fuchsia
+      "#84cc16", // PHP - lime
+      "#ec4899", // Ruby - pink
+      "#f97316", // Swift - orange
+      "#14b8a6", // Kotlin - teal
+      "#a855f7", // Rust - violet
+      "#22d3ee", // Dart - light blue
+    ]);
 
   // Create the pack layout.
   const pack = d3
@@ -138,12 +207,19 @@ function createBubbleChart(data, filter) {
     .attr("width", width)
     .attr("height", height)
     .attr("viewBox", [-margin, -margin, width, height])
-    .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;")
-    .attr("text-anchor", "middle");
+    .attr(
+      "style",
+      "max-width: 100%; height: auto; font: 12px 'Inter', sans-serif;"
+    )
+    .attr("text-anchor", "middle")
+    .style("opacity", 0); // Start with opacity 0 for fade-in effect
 
   // Append the SVG to the chart container
   const chartContainer = document.getElementById("chart-one-container");
   chartContainer.appendChild(svg.node());
+
+  // Animate the SVG fade-in
+  svg.transition().duration(500).style("opacity", 1);
 
   // Place each (leaf) node according to the layout’s x and y values.
   const node = svg
@@ -164,27 +240,30 @@ function createBubbleChart(data, filter) {
   // Add a filled circle.
   node
     .append("circle")
-    .attr("fill-opacity", 0.7)
+    .attr("fill-opacity", 0.8)
     .attr("fill", (d) => {
       // Use custom colors based on languages, if available
-      return d.data.language ? color(d.data.language) : "white";
+      return d.data.language ? color(d.data.language) : "#64748b";
     })
-    .attr("stroke", (d) => {
-      // Use thick black borders for nodes with no language
-      return d.data.language ? "none" : "black";
-    })
-    .attr("stroke-width", (d) => {
-      // Set stroke width for nodes with no language
-      return d.data.language ? 0 : 3;
-    })
+    .attr("stroke", "#ffffff")
+    .attr("stroke-width", 2)
+    .attr("r", 0) // Start with radius 0 for animation
+    .style("cursor", "pointer")
+    .style("filter", "drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))")
+
+    // Animate the circles growing
+    .transition()
+    .duration(800)
+    .delay((d, i) => i * 50)
     .attr("r", (d) => d.r)
-    .style("cursor", "pointer") // Set cursor style to pointer
 
     // Add click event listener to open repo URL when clicked
-    .on("click", (event, d) => {
-      if (d.data.repo_url) {
-        window.open(d.data.repo_url, "_blank");
-      }
+    .on("end", function () {
+      d3.select(this).on("click", (event, d) => {
+        if (d.data.repo_url) {
+          window.open(d.data.repo_url, "_blank");
+        }
+      });
     });
 
   // Add a label.

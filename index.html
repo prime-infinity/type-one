@@ -1,87 +1,157 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <link rel="stylesheet" href="style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>type one</title>
+    <title>GitHub Repository Explorer</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-HS735CM10T"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-HS735CM10T');
     </script>
   </head>
   <body>
-    <h1>top github repos</h1>
-    <div id="filter-container">
-      <label for="filter-select">Filter by:</label>
-      <select id="filter-select">
-        <option value="stars">Stars</option>
-        <option value="forks">Forks</option>
-        <option value="issues">Issues</option>
-      </select>
+    <div class="container">
+      <!-- Header Section -->
+      <header class="header">
+        <div class="header-content">
+          <h1 class="title">
+            <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+            </svg>
+            GitHub Repository Explorer
+          </h1>
+          <p class="subtitle">Discover and explore top GitHub repositories with interactive visualizations</p>
+        </div>
+      </header>
+
+      <!-- Controls Section -->
+      <div class="controls-section">
+        <div class="controls-grid">
+          <div class="control-group">
+            <label for="filter-select" class="control-label">
+              <svg class="control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
+              </svg>
+              Filter by
+            </label>
+            <select id="filter-select" class="control-select">
+              <option value="stars">⭐ Stars</option>
+              <option value="forks">🔄 Forks</option>
+              <option value="issues">❗ Issues</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="count-select" class="control-label">
+              <svg class="control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+              </svg>
+              Count
+            </label>
+            <select id="count-select" class="control-select">
+              <option value="10">10 repos</option>
+              <option value="20">20 repos</option>
+              <option value="30">30 repos</option>
+              <option value="40">40 repos</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="language-select" class="control-label">
+              <svg class="control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="16,18 22,12 16,6"/>
+                <polyline points="8,6 2,12 8,18"/>
+              </svg>
+              Language
+            </label>
+            <select id="language-select" class="control-select">
+              <option value="">All Languages</option>
+              <option value="ActionScript">ActionScript</option>
+              <option value="C">C</option>
+              <option value="C#">C#</option>
+              <option value="C++">C++</option>
+              <option value="Clojure">Clojure</option>
+              <option value="CoffeeScript">CoffeeScript</option>
+              <option value="CSS">CSS</option>
+              <option value="Dart">Dart</option>
+              <option value="DM">DM</option>
+              <option value="Elixir">Elixir</option>
+              <option value="Go">Go</option>
+              <option value="Groovy">Groovy</option>
+              <option value="Haskell">Haskell</option>
+              <option value="HTML">HTML</option>
+              <option value="Java">Java</option>
+              <option value="JavaScript">JavaScript</option>
+              <option value="Julia">Julia</option>
+              <option value="Kotlin">Kotlin</option>
+              <option value="Lua">Lua</option>
+              <option value="MATLAB">MATLAB</option>
+              <option value="Objective-C">Objective-C</option>
+              <option value="Perl">Perl</option>
+              <option value="PHP">PHP</option>
+              <option value="PowerShell">PowerShell</option>
+              <option value="PythonPython">Python</option>
+              <option value="R">R</option>
+              <option value="Ruby">Ruby</option>
+              <option value="Rust">Rust</option>
+              <option value="Scala">Scala</option>
+              <option value="Shell">Shell</option>
+              <option value="Swift">Swift</option>
+              <option value="TeX">TeX</option>
+              <option value="TypeScript">TypeScript</option>
+              <option value="Vim Script">Vim Script</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">
+              <svg class="control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                <polyline points="3.27,6.96 12,12.01 20.73,6.96"/>
+                <line x1="12" y1="22.08" x2="12" y2="12"/>
+              </svg>
+              Chart Type
+            </label>
+            <div class="chart-type-buttons">
+              <span id="bubble-button" class="chart-button active">
+                <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <circle cx="12" cy="12" r="6"/>
+                  <circle cx="12" cy="12" r="2"/>
+                </svg>
+                Bubble Chart
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart Section -->
+      <div class="chart-section">
+        <div class="chart-container">
+          <div id="chart-one-container" class="chart-content">
+            <div class="loading-state">
+              <div class="loading-spinner"></div>
+              <p>Loading repository data...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <p>Data visualization of GitHub repositories • Click on bubbles to explore repositories</p>
+      </footer>
     </div>
-    <div id="count-container">
-      <label for="count-select">Count:</label>
-      <select id="count-select">
-        <option value="10">10</option>
-        <option value="20">20</option>
-        <option value="30">30</option>
-        <option value="40">40</option>
-      </select>
-    </div>
-    <div id="language-container">
-      <label for="language-select">Language:</label>
-      <select id="language-select">
-        <option value="">All</option>
-        <option value="ActionScript">ActionScript</option>
-        <option value="C">C</option>
-        <option value="C#">C#</option>
-        <option value="C++">C++</option>
-        <option value="Clojure">Clojure</option>
-        <option value="CoffeeScript">CoffeeScript</option>
-        <option value="CSS">CSS</option>
-        <option value="Dart">Dart</option>
-        <option value="DM">DM</option>
-        <option value="Elixir">Elixir</option>
-        <option value="Go">Go</option>
-        <option value="Groovy">Groovy</option>
-        <option value="Haskell">Haskell</option>
-        <option value="HTML">HTML</option>
-        <option value="Java">Java</option>
-        <option value="JavaScript">JavaScript</option>
-        <option value="Julia">Julia</option>
-        <option value="Kotlin">Kotlin</option>
-        <option value="Lua">Lua</option>
-        <option value="MATLAB">MATLAB</option>
-        <option value="Objective-C">Objective-C</option>
-        <option value="Perl">Perl</option>
-        <option value="PHP">PHP</option>
-        <option value="PowerShell">PowerShell</option>
-        <option value="PythonPython">Python</option>
-        <option value="R">R</option>
-        <option value="Ruby">Ruby</option>
-        <option value="Rust">Rust</option>
-        <option value="Scala">Scala</option>
-        <option value="Shell">Shell</option>
-        <option value="Swift">Swift</option>
-        <option value="TeX">TeX</option>
-        <option value="TypeScript">TypeScript</option>
-        <option value="Vim Script">Vim Script</option>
-        <!-- Add other languages here -->
-      </select>
-    </div>
-    <div id="chart-type-container">
-      <label>Chart Type:</label>
-      <span id="bubble-button" class="chart-button active">Bubble</span>
-    </div>
-    <!-- actual graph -->
-    <div id="chart-one-container"></div>
 
     <script type="module" src="/main.js"></script>
   </body>
