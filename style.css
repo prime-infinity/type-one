@@ -14,7 +14,6 @@ html, body {
   background-color: #ccc;
   border: none;
   padding: 5px 10px;
-  cursor: pointer;
 }
 
 .chart-button.active {
