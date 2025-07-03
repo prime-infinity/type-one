@@ -10,7 +10,6 @@ Type One is a web application that visualizes GitHub repository statistics using
 - Color-coded bubbles based on the programming language.
 - Responsive design for seamless viewing across different devices.
 
-
 ## Technologies Used
 
 - [D3.js](https://d3js.org/) for data visualization.
@@ -18,16 +17,20 @@ Type One is a web application that visualizes GitHub repository statistics using
 - Node.js and D3-fetch for data loading and manipulation.
 
 ## See Type One in Action
+
 Visit the [Type One Website](https://type-one.netlify.app/) to explore the GitHub repository statistics visualization in practice.
 
-
 ## Run locally
+
 - Clone the project and run `npm install` to add packages.
 
 ```js
 git clone https://github.com/prime-infinity/type-one.git
 
 cd type-one.git
+
+//Install dependencies
+npm install
 
 //Start development server
 npm run dev
